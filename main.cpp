@@ -95,6 +95,7 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 	for(unsigned int i = 0; i < p_list.size(); i++)
 	{	
 		ready_queue.push_back(&p_list[i]);
+		ready_queue[i]->reset();
 		if(p_list[i].is_CPU())
 		{
 				std::cout << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
@@ -115,7 +116,7 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 			if(io_queue[i]->get_IO_time() == 0)
 			{
 				io_queue[i]->get_CPU_burst();
-				io_queue[i]->reset();
+				//io_queue[i]->reset();
 				if(io_queue[i]->is_CPU())
 				{
 					std::cout << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
@@ -128,6 +129,7 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 				}
 				
 				ready_queue.push_back(io_queue[i]);
+				ready_queue[ready_queue.size()-1]->reset();
 				io_queue.erase(io_queue.begin() + i);
 				i--;
 			}

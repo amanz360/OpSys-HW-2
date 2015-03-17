@@ -6,6 +6,9 @@
 Process::Process(bool CPU, int num_bursts, int id, int time)
 {
 	this->CPU_bound = CPU;
+	completed_bursts = 0;
+	avg_wait = 0;
+	reset();
 	if(CPU == true)
 	{
 		bursts_left = num_bursts;
@@ -79,8 +82,11 @@ int Process::randomize_IO_burst()
 // Updates the average wait and turnaround time when a process completes
 void Process::update_averages()
 {
-	avg_turnaround = ( (avg_turnaround * completed_bursts) + turnaround_time ) / (completed_bursts + 1);
-	avg_wait = ( (avg_wait * completed_bursts) + wait_time) / (completed_bursts + 1);
+	//std::cout << "UPDATING AVERAGES FOR PROCESS " << process_id << ": avg_turnaround is " << avg_turnaround << " and turnaround_time is " << turnaround_time << " and completed_bursts is " << completed_bursts << "\n";//": avg_turnaround time changed from " << avg_turnaround << " to " << ( (avg_turnaround * completed_bursts) + turnaround_time ) / (completed_bursts + 1);
+	this->avg_turnaround = ( (avg_turnaround * completed_bursts) + turnaround_time ) / (completed_bursts + 1);
+	//std::cout << "UPDATING AVERAGES FOR PROCESS " << process_id << ": wait_time is " << wait_time << " and avg_wait is changed from " << avg_wait;//": avg_turnaround time changed from " << avg_turnaround << " to " << ( (avg_turnaround * completed_bursts) + turnaround_time ) / (completed_bursts + 1);
+	this->avg_wait = ( (avg_wait * completed_bursts) + wait_time) / (completed_bursts + 1);
+	//std::cout << " to " << avg_wait << " and completed_bursts is " << completed_bursts << "\n";
 	completed_bursts++;
 }
 
@@ -124,7 +130,7 @@ int Process::get_process_ID(){return this->process_id;}
 // Increments the process' wait time by 1
 void Process::increment_wait() 
 {
-	std::cout << "incrementing process ID " << process_id << " wait time from " << wait_time << " to " << wait_time+1 << std::endl;
+	//std::cout << "incrementing process ID " << process_id << " wait time from " << wait_time << " to " << wait_time+1 << std::endl;
 	this->wait_time++;
 }
 
