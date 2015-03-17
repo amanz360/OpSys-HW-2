@@ -32,7 +32,7 @@ vector<Process> generateProcesses(int num_processes, int num_bursts)
 	return process_list;
 }
 
-/*bool cpuBoundDone(vector<Process> process_list)
+bool cpuBoundDone(vector<Process> process_list)
 {
 	for(unsigned int i = 0; i < process_list.size(); i++)
 	{
@@ -44,7 +44,7 @@ vector<Process> generateProcesses(int num_processes, int num_bursts)
 	}
 	
 	return true;
-}*/
+}
 
 //vector<int> shortestJobFirst(int num_processes, int num_bursts, int num_cpu);
 
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 	// to make tunable.
 	//int num_processes = 5, num_bursts = 6, num_cpu = 4;
 
-	/*int num_processes = 12;
+	int num_processes = 12;
 	int num_bursts = 6;
 	int num_cpu = num_processes/5;
 	srand(time(NULL));
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 		for (int j=0; j<num_bursts; j++) {
 			cout << "   " << p[i].get_cpu_vec()[j] << "\n";
 		}
-	}*/
+	}
 	
 	//shortestJobFirst(num_processes, num_bursts, num_cpu);
 }
