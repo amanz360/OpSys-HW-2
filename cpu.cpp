@@ -23,24 +23,24 @@ bool CPU::run_CPU(int time)
 	}
 	else
 	{
-		current_process.decrement_CPU();
-		if(current_process.get_CPU_time() == 0)
+		(*current_process).decrement_CPU();
+		if((*current_process).get_CPU_time() == 0)
 		{
-			if(current_process.is_CPU())
+			if((*current_process).is_CPU())
 			{
-				current_process.decrement_bursts();
-				if(current_process.get_bursts() == 0)
+				(*current_process).decrement_bursts();
+				if((*current_process).get_bursts() == 0)
 				{
-					std::cout << "[time " << time << "ms] CPU-bound process ID " << current_process.get_process_ID() << " terminated (avg turnaround time "<< current_process.get_avg_turn() << "ms, avg total wait time " << current_process.get_avg_wait() << "ms)" << std::endl;
+					std::cout << "[time " << time << "ms] CPU-bound process ID " << (*current_process).get_process_ID() << " terminated (avg turnaround time "<< (*current_process).get_avg_turn() << "ms, avg total wait time " << (*current_process).get_avg_wait() << "ms)" << std::endl;
 				}
 				else
 				{
-					std::cout << "[time " << time << "ms] CPU-bound process ID " << current_process.get_process_ID() << " CPU burst done (turnaround time "<< current_process.get_turn() << "ms, total wait time " << current_process.get_wait() << "ms)" << std::endl;
+					std::cout << "[time " << time << "ms] CPU-bound process ID " << (*current_process).get_process_ID() << " CPU burst done (turnaround time "<< (*current_process).get_turn() << "ms, total wait time " << (*current_process).get_wait() << "ms)" << std::endl;
 				}
 			}
 			else
 			{
-				std::cout << "[time " << time << "ms] Interactive process ID " << current_process.get_process_ID() << " CPU burst done (turnaround time "<< current_process.get_turn() << "ms, total wait time " << current_process.get_wait() << "ms)" << std::endl;
+				std::cout << "[time " << time << "ms] Interactive process ID " << (*current_process).get_process_ID() << " CPU burst done (turnaround time "<< (*current_process).get_turn() << "ms, total wait time " << (*current_process).get_wait() << "ms)" << std::endl;
 			}
 			return true;
 		}
@@ -74,3 +74,4 @@ void CPU::add_process(Process & p, int time, int old_ID)
 	current_process = &p;
 	in_use = true;
 }
+

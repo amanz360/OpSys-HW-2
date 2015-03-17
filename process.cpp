@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <vector>
 #include "process.h"
 
 Process::Process(bool CPU, int num_bursts, int id, int time)
@@ -8,43 +9,74 @@ Process::Process(bool CPU, int num_bursts, int id, int time)
 	{
 		bursts_left = num_bursts;
 	}
-	randomize_CPU_burst();
 	birthday = time;
 	process_id = id;
+
+	// Randomize burst times
+	this->remaining_CPU_burst = randomize_CPU_burst();
+	this->remaining_IO = randomize_IO_burst();
+	if (!this->is_CPU())
+	{
+		// could need up to 150 more bursts for io-bound processes	
+		for (int i=0; i<151; i++)
+		{
+			cpu_burst_times.push_back(randomize_CPU_burst());
+			io_burst_times.push_back(randomize_IO_burst());
+		}
+	}
+	else
+	{
+		// only need 5 more bursts for cpu-bound processes
+		for (int i=0; i<5; i++)
+		{
+			cpu_burst_times.push_back(randomize_CPU_burst());
+			io_burst_times.push_back(randomize_IO_burst());
+		}
+	}
+}
+
+void Process::get_CPU_burst()
+{
+	cpu_burst_times.erase(cpu_burst_times.begin());
+	this->remaining_CPU_burst = cpu_burst_times[0];
+}
+
+void Process::get_IO_burst()
+{
+	io_burst_times.erase(io_burst_times.begin());
+	this->remaining_IO = io_burst_times[0];
 }
 
 // Chooses a random time in between 20-200 ms for interactive processes
 // or a random time in between 20-3000 ms for CPU bound processes
-void Process::randomize_CPU_burst()
+int Process::randomize_CPU_burst()
 {
 	/* initialize random seed: */
- 	 srand (time(NULL));
-	if(!this->is_CPU())
+ 	srand (time(NULL));
+	int r;
+	if (!this->is_CPU())
 	{
-		//should be 2881, is 181 for testing purposes
-		this->remaining_CPU_burst = rand() % 181 + 20;
+		// interactive process: range 20-200
+		r = rand() % 181 + 20;
 	}
 	else
 	{
-		this->remaining_CPU_burst = rand() % 181 + 20;
+		// CPU-bound process: range 200-3000
+		r = rand() % 2881 + 200;
 	}
+	return r;
 }
 
 
 // Chooses a random time in between 1000-4500 ms for interactive processes
 // or a random time in between 1200-3200 ms for CPU bound processes
-void Process::randomize_IO_burst()
+int Process::randomize_IO_burst()
 {
 	/* initialize random seed: */
  	 srand (time(NULL));
-	if(!this->is_CPU())
-	{
-		this->remaining_IO = rand() % 3501 + 1000;
-	}
-	else
-	{
-		this->remaining_IO = rand() % 2001 + 1200;
-	}
+	// either process: range 1000-4500
+	int r = rand() % 3501 + 1000;
+	return r;
 }
 
 // Updates the average wait and turnaround time when a process completes
@@ -106,3 +138,10 @@ void Process::decrement_IO(){this->remaining_IO--;}
 
 // Decrements the number of bursts left by 1
 void Process::decrement_bursts() {bursts_left--;}
+
+// Returns vector of CPU burst times
+std::vector<int> Process::get_cpu_vec() {return this->cpu_burst_times;}
+
+// Returns vector of IO burst times
+std::vector<int> Process::get_io_vec() {return this->io_burst_times;}
+

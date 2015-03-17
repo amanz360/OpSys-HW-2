@@ -1,3 +1,6 @@
+#ifndef __CPU__
+#define __CPU__
+
 #include <vector>
 #include "process.h"
 
@@ -10,7 +13,7 @@ class CPU
 		bool run_CPU(int time);
 		bool in_use;
 		int time_used;
-		void add_process(Process & p, int time);
+		void add_process(Process & p, int time, int old_ID);
 		void remove_process();
 		Process* get_process();
 		
@@ -19,3 +22,6 @@ class CPU
 		int t_context;
 		
 };
+
+#endif
+

@@ -7,21 +7,9 @@
 #include <windows.h>
 
 #include "cpu.h"
+#include "process.h"
 
 using namespace std;
-
-vector<int> shortestJobFirst(int num_processes, int num_bursts, int num_cpu);
-
-int main(int argc, char** argv)
-{
-	//TODO: Write functions for each algorithm
-	// To make the functions tunable, include parameters for number
-	// of processes and number of CPU's. There could be more things
-	// to make tunable.
-	int num_processes = 5, num_bursts = 6, num_cpu = 4;
-	
-	shortestJobFirst(num_processes, num_bursts, num_cpu);
-}
 
 vector<Process> generateProcesses(int num_processes, int num_bursts)
 {
@@ -44,7 +32,7 @@ vector<Process> generateProcesses(int num_processes, int num_bursts)
 	return process_list;
 }
 
-bool cpuBoundDone(vector<Process> process_list)
+/*bool cpuBoundDone(vector<Process> process_list)
 {
 	for(unsigned int i = 0; i < process_list.size(); i++)
 	{
@@ -56,9 +44,36 @@ bool cpuBoundDone(vector<Process> process_list)
 	}
 	
 	return true;
+}*/
+
+//vector<int> shortestJobFirst(int num_processes, int num_bursts, int num_cpu);
+
+int main(int argc, char** argv)
+{
+
+	//TODO: Write functions for each algorithm
+	// To make the functions tunable, include parameters for number
+	// of processes and number of CPU's. There could be more things
+	// to make tunable.
+	//int num_processes = 5, num_bursts = 6, num_cpu = 4;
+
+	/*int num_processes = 12;
+	int num_bursts = 6;
+	int num_cpu = num_processes/5;
+	srand(time(NULL));
+
+	vector<Process> p = generateProcesses(num_processes, num_bursts); // vector of all processes
+	for (unsigned int i=0; i<p.size(); i++) {
+		cout << "process[" << p[i].get_process_ID() << "]\n";
+		for (int j=0; j<num_bursts; j++) {
+			cout << "   " << p[i].get_cpu_vec()[j] << "\n";
+		}
+	}*/
+	
+	//shortestJobFirst(num_processes, num_bursts, num_cpu);
 }
 
-vector<int> shortestJobFirst(int num_processes, int num_bursts, int num_CPU)
+/*vector<int> shortestJobFirst(int num_processes, int num_bursts, int num_CPU)
 {
 	//Prepare all of the initial conditions
 	vector<Process> process_list = generateProcesses(num_processes, num_bursts);
@@ -214,5 +229,5 @@ vector<int> shortestJobFirst(int num_processes, int num_bursts, int num_CPU)
 	
 	return place_holder;
 
-}
+}*/
 
