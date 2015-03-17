@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <vector>
+#include <iostream>
 #include "process.h"
 
 Process::Process(bool CPU, int num_bursts, int id, int time)
@@ -121,10 +122,14 @@ int Process::get_avg_wait(){return avg_wait;}
 int Process::get_process_ID(){return this->process_id;}
 
 // Increments the process' wait time by 1
-void Process::increment_wait() {wait_time++;}
+void Process::increment_wait() 
+{
+	std::cout << "incrementing process ID " << process_id << " wait time from " << wait_time << " to " << wait_time+1 << std::endl;
+	this->wait_time++;
+}
 
-// Increments the process' turnaround time by 1000
-void Process::increment_turn() {turnaround_time++;}
+// Increments the process' turnaround time by 1
+void Process::increment_turn() {this->turnaround_time++;}
 
 // Decrements the remaining CPU time by 1
 void Process::decrement_CPU(){this->remaining_CPU_burst--;}
@@ -133,7 +138,7 @@ void Process::decrement_CPU(){this->remaining_CPU_burst--;}
 void Process::decrement_IO(){this->remaining_IO--;}
 
 // Decrements the number of bursts left by 1
-void Process::decrement_bursts() {bursts_left--;}
+void Process::decrement_bursts() {this->bursts_left--;}
 
 // Returns vector of CPU burst times
 std::vector<int> Process::get_cpu_vec() {return this->cpu_burst_times;}

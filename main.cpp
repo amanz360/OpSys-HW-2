@@ -79,6 +79,8 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 	vector<Process*> ready_queue;
 	vector<Process*> io_queue;
 	vector<CPU> cpu_list;
+	//TODO:
+	// Implement stat keeping for the following variables:
 	//int min_turn, max_turn, avg_turn;
 	//int min_wait, max_wait, avg_wait;
 	int time = 0;
@@ -116,13 +118,13 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 				io_queue[i]->reset();
 				if(io_queue[i]->is_CPU())
 				{
-					std::cout << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << ready_queue[i]->get_CPU_time()
-																																							<< "ms CPU 	time)" << std::endl;
+					std::cout << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+																																							<< "ms CPU time)" << std::endl;
 				} 
 				else
 				{
-					std::cout << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << ready_queue[i]->get_CPU_time()
-																																								<< "ms CPU 	time)" << std::endl;
+					std::cout << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+																																								<< "ms CPU time)" << std::endl;
 				}
 				
 				ready_queue.push_back(io_queue[i]);
@@ -170,6 +172,22 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 						cpu_list[i].remove_process();
 					}
 				}
+			}
+		}
+
+		//Increase the wait time and turnaround time for any process in the ready queue
+		for(unsigned int i = 0; i < ready_queue.size(); i++)
+		{
+			ready_queue[i]->increment_wait();
+			ready_queue[i]->increment_turn();
+		}
+		//Increase the turnaround time for any process currently being run_CPU
+		for(unsigned int i = 0; i < cpu_list.size(); i++)
+		{
+			if(cpu_list[i].in_use == true)
+			{
+				Process* p = cpu_list[i].get_process();
+				p->increment_turn();
 			}
 		}
 

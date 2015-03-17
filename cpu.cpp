@@ -26,6 +26,7 @@ bool CPU::run_CPU(int time)
 		(*current_process).decrement_CPU();
 		if((*current_process).get_CPU_time() == 0)
 		{
+			current_process->update_averages();
 			if((*current_process).is_CPU())
 			{
 				(*current_process).decrement_bursts();
