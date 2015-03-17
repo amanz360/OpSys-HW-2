@@ -19,6 +19,7 @@ bool CPU::run_CPU(int time)
 	{
 		t_context--;
 		time_used++;
+		in_use++;
 		return false;
 	}
 	else

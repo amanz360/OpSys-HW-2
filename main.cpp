@@ -78,11 +78,14 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 {
 	vector<Process*> ready_queue;
 	vector<Process*> io_queue;
+	//TODO:
+	// Make cpu_list a list of pointers instead, to keep track of time_used and in_use
 	vector<CPU> cpu_list;
 	//TODO:
 	// Implement stat keeping for the following variables:
-	//int min_turn, max_turn, avg_turn;
-	//int min_wait, max_wait, avg_wait;
+	int min_turn = -1, max_turn = 0, avg_turn = 0;
+	int min_wait = -1, max_wait = 0, avg_wait = 0;
+	int num_bursts_completed = 0;
 	int time = 0;
 
 	//Create the CPU list
@@ -162,6 +165,29 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 				if(cpu_done)
 				{
 					Process* p = cpu_list[i].get_process();
+					// Update stats
+					if (p->get_turn() > max_turn) {
+						max_turn = p->get_turn();
+					}
+					if (min_turn == -1) {
+						min_turn = p->get_turn();
+					}
+					if (min_turn >=0 && p->get_turn() < min_turn) {
+						min_turn = p->get_turn();
+					}
+					if (p->get_wait() > max_wait) {
+						max_wait = p->get_wait();
+					}
+					if (min_wait == -1) {
+						min_wait = p->get_turn();
+					}
+					if (min_wait >= 0 && p->get_wait() < min_wait) {
+						min_wait = p->get_wait();
+					}
+					avg_turn = ((avg_turn*num_bursts_completed) + p->get_turn())/(num_bursts_completed+1);
+					avg_wait = ((avg_wait*num_bursts_completed) + p->get_wait())/(num_bursts_completed+1);
+					num_bursts_completed++;
+
 					//if a process is CPU-bound and completes its required number of bursts, it is done and doesn't need to go into any other queues
 					if(p->is_CPU() == true && p->get_bursts() == 0)
 					{
@@ -195,6 +221,17 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 
 		time++;
 	}
+
+	// Display stats
+	std::cout << "\nTurnaround time: min " << min_turn << "; avg " << avg_turn << "ms; max " << max_turn << "ms\n";
+	std::cout << "Total waut time: min " << min_wait << "; avg " << avg_wait << "ms; max " << max_wait << "ms\n";
+	std::cout << "Average CPU utilization: ????\n\n";
+
+	std::cout << "Average CPU utilization per process:\n";	
+	for (unsigned int i=0; i<p_list.size(); i++) {
+		std::cout << "process " << p_list[i].get_process_ID() << ": ????\%\n";
+	}
+
 }
 
 /*vector<int> shortestJobFirst(int num_processes, int num_bursts, int num_CPU)
