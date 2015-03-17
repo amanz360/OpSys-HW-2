@@ -55,23 +55,23 @@ Process* CPU::get_process()
 
 void CPU::remove_process()
 {
-	t_context += 2;
 	current_process = NULL;
 	in_use = false;
 }
 
-void CPU::add_process(Process & p, int time, int old_ID)
+void CPU::add_process(Process * p)
 {
-	t_context += 2;
-	if(old_ID == -1)
-	{
-		std::cout << "[time " << time << "ms] Context switch (switching from no process to process id " << p.get_process_ID() << ")" << std::endl;
-	}
-	else
-	{
-		std::cout << "[time " << time << "ms] Context switch (swapping out process ID " << old_ID << " to process ID " << p.get_process_ID() << ")" << std::endl;
-	}
-	current_process = &p;
+	current_process = p;
+	in_use = true;
+}
+
+void CPU::change_process(Process * p, int time)
+{
+	t_context += 4;
+	std::cout << "[time " << time << "ms] Context switch (swapping out process ID " << current_process->get_process_ID() << " to process ID " << p->get_process_ID() << ")" << std::endl;
+
+
+	current_process = p;
 	in_use = true;
 }
 

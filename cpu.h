@@ -13,7 +13,8 @@ class CPU
 		bool run_CPU(int time);
 		bool in_use;
 		int time_used;
-		void add_process(Process & p, int time, int old_ID);
+		void change_process(Process * p, int time);
+		void add_process(Process *p);
 		void remove_process();
 		Process* get_process();
 		
