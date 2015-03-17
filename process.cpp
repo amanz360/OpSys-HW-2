@@ -51,8 +51,6 @@ void Process::get_IO_burst()
 // or a random time in between 20-3000 ms for CPU bound processes
 int Process::randomize_CPU_burst()
 {
-	/* initialize random seed: */
- 	srand (time(NULL));
 	int r;
 	if (!this->is_CPU())
 	{
@@ -72,8 +70,6 @@ int Process::randomize_CPU_burst()
 // or a random time in between 1200-3200 ms for CPU bound processes
 int Process::randomize_IO_burst()
 {
-	/* initialize random seed: */
- 	 srand (time(NULL));
 	// either process: range 1000-4500
 	int r = rand() % 3501 + 1000;
 	return r;
