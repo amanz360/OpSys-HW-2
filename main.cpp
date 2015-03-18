@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <stdlib.h>
 #include <time.h>
@@ -19,7 +20,7 @@ vector<Process> generateProcesses(int num_processes, int num_bursts)
 	
 	for(int i = 0; i < num_processes; i++)
 	{
-		if(i <= num_cpu)
+		if(i < num_cpu)
 		{
 			process_list.push_back(Process(true, num_bursts, i+1, 0));
 		}
@@ -46,40 +47,69 @@ bool cpuBoundDone(vector<Process> process_list)
 	return true;
 }
 
-void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU);
-void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU);
-void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU);
-void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice);
+void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU, ofstream &FCFS_output);
+void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU, ofstream &SJF_output);
+void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU, ofstream &SRT_output);
+void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice, ofstream &RR_output);
 
 int main(int argc, char** argv)
 {
 
-	//TODO: Write functions for each algorithm
-	// To make the functions tunable, include parameters for number
-	// of processes and number of CPU's. There could be more things
-
+	
+	//Default values for tunable parameters
 	int num_processes = 12;
 	int num_bursts = 6;
 	int num_cpu = 4;
 	int t_slice = 80;
 	srand(time(NULL));
+
+	char input;
+	std::cout << "Do you want to use the default values? (y/n): ";
+	std::cin >> input;
+	if(tolower(input) == 'n')
+	{
+		std::cout << "Please input the number of processes you want: ";
+		std::cin >> num_processes;
+		std::cout << "Please input the number of bursts per CPU process: ";
+		std::cin >> num_bursts;
+		std::cout << "Please input the number of CPU's: ";
+		std::cin >> num_cpu;
+		std::cout << "Please input the length of the time slice for RR: ";
+		std::cin >> t_slice;
+	}
+	else
+	{
+		std::cout << "I'll take that as a yes." << std::endl;
+	}
+	std::cout << "num processes: " << num_processes << " / num_bursts:" << num_bursts << " / num_cpu: " << num_cpu << " / t_slice: " << t_slice << std::endl;
 	
 
 	vector<Process> p_list = generateProcesses(num_processes, num_bursts); // vector of all processes
+
+	ofstream FCFS_output, SJF_output, SRT_output, RR_output;
+  	FCFS_output.open ("FCFS_log", ios::trunc);
+  	SJF_output.open ("SJF_log", ios::trunc);
+  	SRT_output.open ("SRT_log", ios::trunc);
+  	RR_output.open ("RR_log", ios::trunc);
 	
-	std::cout << "\nFIRST COME FIRST SERVE\n";
-	firstComeFirstServe(p_list, num_bursts, num_cpu);
-	std::cout << "\nSHORTEST JOB FIRST\n";
-	shortestJobFirst(p_list, num_bursts, num_cpu);
-	std::cout << "\nSHORTEST REMAINING TIME\n";
-	shortestRemainingTime(p_list, num_bursts, num_cpu);
-	std::cout << "\nROUND ROBIN\n";
-	roundRobin(p_list, num_bursts, num_cpu, t_slice);
+	std::cout << "===============================================\n";
+	std::cout << "\tFIRST COME FIRST SERVE\n";
+	firstComeFirstServe(p_list, num_bursts, num_cpu, FCFS_output);
+	std::cout << "===============================================\n";
+	std::cout << "\tSHORTEST JOB FIRST\n";
+	shortestJobFirst(p_list, num_bursts, num_cpu, SJF_output);
+	std::cout << "===============================================\n";
+	std::cout << "\tSHORTEST REMAINING TIME\n";
+	shortestRemainingTime(p_list, num_bursts, num_cpu, SRT_output);
+	std::cout << "===============================================\n";
+	std::cout << "\tROUND ROBIN\n";
+	roundRobin(p_list, num_bursts, num_cpu, t_slice, RR_output);
+	std::cout << "===============================================\n";
 
 }
 //         heheheh
 //        vvvvv------------------get it hehhehehehheheogkdogkorgk
-void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
+void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU, ofstream &FCFS_output)
 {
 	vector<Process*> ready_queue;
 	vector<Process*> io_queue;
@@ -102,12 +132,12 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 		ready_queue[i]->reset();
 		if(p_list[i].is_CPU())
 		{
-			std::cout << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			FCFS_output << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																				<< "ms CPU time)" << std::endl;
 		} 
 		else
 		{
-			std::cout << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			FCFS_output << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																				<< "ms CPU time)" << std::endl;
 		}
 	}
@@ -123,12 +153,12 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 				//io_queue[i]->reset();
 				if(io_queue[i]->is_CPU())
 				{
-					std::cout << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					FCFS_output << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 				} 
 				else
 				{
-					std::cout << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					FCFS_output << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																								<< "ms CPU time)" << std::endl;
 				}
 				
@@ -161,7 +191,7 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 			if(cpu_list[i].in_use == true)
 			{
 				//if a process completes, it will return true
-				bool cpu_done = cpu_list[i].run_CPU(time);
+				bool cpu_done = cpu_list[i].run_CPU(time, FCFS_output);
 				//if a process completes, we have to put the process into its IO burst
 				if(cpu_done)
 				{
@@ -245,7 +275,7 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 }
 
 
-void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU)
+void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU, ofstream &SJF_output)
 {
 	vector<Process*> ready_queue;
 	vector<Process*> io_queue;
@@ -280,12 +310,12 @@ void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU)
 		ready_queue[index]->reset();
 		if(p_list[i].is_CPU())
 		{
-				std::cout << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			SJF_output << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 		} 
 		else
 		{
-			std::cout << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			SJF_output << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 		}
 	}
@@ -301,12 +331,12 @@ void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU)
 				//io_queue[i]->reset();
 				if(io_queue[i]->is_CPU())
 				{
-					std::cout << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					SJF_output << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 				} 
 				else
 				{
-					std::cout << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					SJF_output << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																								<< "ms CPU time)" << std::endl;
 				}
 				// Find index to put process in ready_queue in order of shortest job first
@@ -348,7 +378,7 @@ void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU)
 			if(cpu_list[i].in_use == true)
 			{
 				//if a process completes, it will return true
-				bool cpu_done = cpu_list[i].run_CPU(time);
+				bool cpu_done = cpu_list[i].run_CPU(time, SJF_output);
 				//if a process completes, we have to put the process into its IO burst
 				if(cpu_done)
 				{
@@ -431,7 +461,7 @@ void shortestJobFirst(vector<Process> p_list, int num_bursts, int num_CPU)
 
 }
 
-void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU)
+void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU, ofstream &SRT_output)
 {
 	vector<Process*> ready_queue;
 	vector<Process*> io_queue;
@@ -466,12 +496,12 @@ void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU)
 		ready_queue[index]->reset();
 		if(p_list[i].is_CPU())
 		{
-				std::cout << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			SRT_output << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 		} 
 		else
 		{
-			std::cout << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			SRT_output << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 		}
 	}
@@ -487,12 +517,12 @@ void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU)
 				//io_queue[i]->reset();
 				if(io_queue[i]->is_CPU())
 				{
-					std::cout << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					SRT_output << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 				} 
 				else
 				{
-					std::cout << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					SRT_output << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																								<< "ms CPU time)" << std::endl;
 				}
 				// Find index to put process in ready_queue in order of shortest job first
@@ -523,20 +553,20 @@ void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU)
 			}
 			else if(cpu_list[i].in_use && ready_queue.size() > 0)
 			{
-				if (cpu_list[i].get_process()->get_cur_burst() > ready_queue[0]->get_cur_burst())
+				if (cpu_list[i].get_process()->get_CPU_time() > ready_queue[0]->get_CPU_time())
 				{
 					// context switch: preempt process with shorter burst time
 					index = ready_queue.size();
 					for (unsigned int j=0; j<ready_queue.size(); j++)
 					{
-						if (cpu_list[i].get_process()->get_cur_burst() < ready_queue[j]->get_CPU_time())
+						if (cpu_list[i].get_process()->get_CPU_time() < ready_queue[j]->get_CPU_time())
 						{
 							index = j;
 							break;
 						}
 					}
 					ready_queue.insert(ready_queue.begin()+index,cpu_list[i].get_process());
-					cpu_list[i].change_process(ready_queue[0],time);
+					cpu_list[i].change_process(ready_queue[0],time, SRT_output);
 					ready_queue.erase(ready_queue.begin());
 				}
 			}
@@ -554,7 +584,7 @@ void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU)
 			if(cpu_list[i].in_use == true)
 			{
 				//if a process completes, it will return true
-				bool cpu_done = cpu_list[i].run_CPU(time);
+				bool cpu_done = cpu_list[i].run_CPU(time, SRT_output);
 				//if a process completes, we have to put the process into its IO burst
 				if(cpu_done)
 				{
@@ -636,7 +666,7 @@ void shortestRemainingTime(vector<Process> p_list, int num_bursts, int num_CPU)
 	}
 }
 
-void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice)
+void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice, ofstream &RR_output)
 {
 	vector<Process*> ready_queue;
 	vector<Process*> io_queue;
@@ -659,12 +689,12 @@ void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice
 		ready_queue[i]->reset();
 		if(p_list[i].is_CPU())
 		{
-			std::cout << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			RR_output << "[time " << time << "ms] CPU-bound process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																				<< "ms CPU time)" << std::endl;
 		} 
 		else
 		{
-			std::cout << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
+			RR_output << "[time " << time << "ms] Interactive process ID " << p_list[i].get_process_ID() << " entered ready queue (requires " << p_list[i].get_CPU_time()
 																																				<< "ms CPU time)" << std::endl;
 		}
 	}
@@ -680,12 +710,12 @@ void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice
 				//io_queue[i]->reset();
 				if(io_queue[i]->is_CPU())
 				{
-					std::cout << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					RR_output << "[time " << time << "ms] CPU-bound process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																							<< "ms CPU time)" << std::endl;
 				} 
 				else
 				{
-					std::cout << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
+					RR_output << "[time " << time << "ms] Interactive process ID " << io_queue[i]->get_process_ID() << " entered ready queue (requires " << io_queue[i]->get_CPU_time()
 																																								<< "ms CPU time)" << std::endl;
 				}
 				
@@ -718,7 +748,7 @@ void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice
 			if(cpu_list[i].in_use == true)
 			{
 				//if a process completes, it will return true
-				bool cpu_done = cpu_list[i].run_CPU(time);
+				bool cpu_done = cpu_list[i].run_CPU(time, RR_output);
 				//if a process completes, we have to put the process into its IO burst
 				if(cpu_done)
 				{
@@ -758,17 +788,17 @@ void roundRobin(vector<Process> p_list, int num_bursts, int num_CPU, int t_slice
 						cpu_list[i].remove_process();
 					}
 				}
-				else if(cpu_list[i].get_process()->get_cur_burst() == t_slice)
+				else if(cpu_list[i].get_process()->get_cur_burst() > t_slice)
 				{
 					if(ready_queue.size() > 0)
 					{
 						ready_queue.push_back(cpu_list[i].get_process());
-						cpu_list[i].change_process(ready_queue[0], time);
+						cpu_list[i].change_process(ready_queue[0], time, RR_output);
 						ready_queue.erase(ready_queue.begin());
 					}
 					else
 					{
-						cpu_list[i].change_process(cpu_list[i].get_process(), time);
+						cpu_list[i].change_process(cpu_list[i].get_process(), time, RR_output);
 					}
 				}
 				/*else
