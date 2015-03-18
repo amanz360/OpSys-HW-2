@@ -14,11 +14,13 @@ class Process
 		void increment_wait();
 		void increment_turn();
 		void increment_use();
+		void increment_cur_burst();
 		void decrement_CPU();
 		void decrement_IO();
 		void decrement_bursts();
 		void update_averages();
 		void reset();
+		void reset_burst();
 		int get_CPU_time();
 		int get_IO_time();
 		int get_process_ID();
@@ -29,6 +31,7 @@ class Process
 		int get_avg_turn();
 		int get_avg_wait();
 		int get_use();
+		int get_cur_burst();
 		bool is_CPU();
 		std::vector<int> get_cpu_vec();
 		std::vector<int> get_io_vec();
@@ -45,6 +48,7 @@ class Process
 		int wait_time;				//Time spent in ready queue
 		int turnaround_time;		//Total time since entering ready queue
 		int time_used;				//Total time spent using a CPU
+		int cur_burst;				//Total time since beginning usage of a CPU, resets on each burst
 		bool CPU_bound;				//Indicates if it is CPU bound or interactive
 		std::vector<int> cpu_burst_times;//Randomized cpu burst times
 		std::vector<int> io_burst_times; //Randomized io burst times

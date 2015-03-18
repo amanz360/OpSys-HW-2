@@ -26,6 +26,7 @@ bool CPU::run_CPU(int time)
 		time_used++;
 		(*current_process).increment_use();
 		(*current_process).decrement_CPU();
+		(*current_process).increment_cur_burst();
 		if((*current_process).get_CPU_time() == 0)
 		{
 			current_process->update_averages();
@@ -73,7 +74,7 @@ void CPU::change_process(Process * p, int time)
 	t_context += 4;
 	std::cout << "[time " << time << "ms] Context switch (swapping out process ID " << current_process->get_process_ID() << " to process ID " << p->get_process_ID() << ")" << std::endl;
 
-
+	current_process->reset_burst();
 	current_process = p;
 	in_use = true;
 }
