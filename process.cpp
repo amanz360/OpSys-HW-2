@@ -21,24 +21,24 @@ Process::Process(bool CPU, int num_bursts, int id, int time)
 	// Randomize burst times
 	this->remaining_CPU_burst = randomize_CPU_burst();
 	this->remaining_IO = randomize_IO_burst();
-	if (!this->is_CPU())
-	{
-		// could need up to 150 more bursts for io-bound processes	
-		for (int i=0; i<151; i++)
+	//if (!this->is_CPU())
+	//{
+		// could need many more bursts for io-bound processes	
+		for (int i=0; i<num_bursts; i++)
 		{
 			cpu_burst_times.push_back(randomize_CPU_burst());
 			io_burst_times.push_back(randomize_IO_burst());
 		}
-	}
-	else
+	//}
+	/*else
 	{
-		// only need 5 more bursts for cpu-bound processes
-		for (int i=0; i<5; i++)
+		// only need num_bursts for cpu-bound processes
+		for (int i=0; i<num_bursts-1; i++)
 		{
 			cpu_burst_times.push_back(randomize_CPU_burst());
 			io_burst_times.push_back(randomize_IO_burst());
 		}
-	}
+	}*/
 }
 
 void Process::get_CPU_burst()

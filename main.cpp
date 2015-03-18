@@ -26,7 +26,7 @@ vector<Process> generateProcesses(int num_processes, int num_bursts)
 		}
 		else
 		{
-			process_list.push_back(Process(false, -1, i+1, 0));
+			process_list.push_back(Process(false, num_bursts*60, i+1, 0));
 		}
 	}
 	
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 	{
 		std::cout << "I'll take that as a yes." << std::endl;
 	}
-	std::cout << "num processes: " << num_processes << " / num_bursts:" << num_bursts << " / num_cpu: " << num_cpu << " / t_slice: " << t_slice << std::endl;
+	std::cout << "num processes: " << num_processes << " / num_bursts: " << num_bursts << " / num_cpu: " << num_cpu << " / t_slice: " << t_slice << std::endl;
 	
 
 	vector<Process> p_list = generateProcesses(num_processes, num_bursts); // vector of all processes
