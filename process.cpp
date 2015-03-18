@@ -9,6 +9,7 @@ Process::Process(bool CPU, int num_bursts, int id, int time)
 	completed_bursts = 0;
 	avg_wait = 0;
 	time_used = 0;
+	cur_burst = 0;
 	reset();
 	if(CPU == true)
 	{
@@ -98,6 +99,11 @@ void Process::reset()
 	wait_time = 0;
 }
 
+void Process::reset_burst()
+{
+	cur_burst = 0;
+}
+
 // Returns the process' birthday
 int Process::get_birthday() {return this->birthday;}
 
@@ -130,6 +136,8 @@ int Process::get_process_ID(){return this->process_id;}
 
 int Process::get_use(){return this->time_used;}
 
+int Process::get_cur_burst(){return this->cur_burst;}
+
 // Increments the process' wait time by 1
 void Process::increment_wait() 
 {
@@ -141,6 +149,8 @@ void Process::increment_wait()
 void Process::increment_turn() {this->turnaround_time++;}
 
 void Process::increment_use() {this->time_used++;}
+
+void Process::increment_cur_burst() {this->cur_burst++;}
 
 // Decrements the remaining CPU time by 1
 void Process::decrement_CPU(){this->remaining_CPU_burst--;}
