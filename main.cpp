@@ -54,8 +54,6 @@ int main(int argc, char** argv)
 	//TODO: Write functions for each algorithm
 	// To make the functions tunable, include parameters for number
 	// of processes and number of CPU's. There could be more things
-	// to make tunable.
-	//int num_processes = 5, num_bursts = 6, num_cpu = 4;
 
 	int num_processes = 12;
 	int num_bursts = 6;
@@ -64,12 +62,6 @@ int main(int argc, char** argv)
 	
 
 	vector<Process> p_list = generateProcesses(num_processes, num_bursts); // vector of all processes
-	/*for (unsigned int i=0; i<p_list.size(); i++) {
-		cout << "process[" << p_list[i].get_process_ID() << "]\n";
-		for (int j=0; j<num_bursts; j++) {
-			cout << "   " << p_list[i].get_cpu_vec()[j] << "\n";
-		}
-	}*/
 	
 	firstComeFirstServe(p_list, num_bursts, num_cpu);
 }
@@ -224,12 +216,21 @@ void firstComeFirstServe(vector<Process> p_list, int num_bursts, int num_CPU)
 
 	// Display stats
 	std::cout << "\nTurnaround time: min " << min_turn << "; avg " << avg_turn << "ms; max " << max_turn << "ms\n";
-	std::cout << "Total waut time: min " << min_wait << "; avg " << avg_wait << "ms; max " << max_wait << "ms\n";
-	std::cout << "Average CPU utilization: ????\n\n";
+	std::cout << "Total wait time: min " << min_wait << "; avg " << avg_wait << "ms; max " << max_wait << "ms\n";
+	double answer = 0;
+	for(unsigned int i = 0; i < cpu_list.size(); i++)
+	{
+		answer += cpu_list[i].time_used;
+	}
+	answer /= num_CPU;
+	answer = (answer /(double) time) * 100;
+	std::cout << "Average CPU utilization: " << answer << "%\n\n";
 
 	std::cout << "Average CPU utilization per process:\n";	
 	for (unsigned int i=0; i<p_list.size(); i++) {
-		std::cout << "process " << p_list[i].get_process_ID() << ": ????\%\n";
+		answer = ((double)p_list[i].get_use() / (double) time) * 100;
+		answer /= num_CPU;
+		std::cout << "process " << p_list[i].get_process_ID() << ": " << answer << "%\n";
 	}
 
 }

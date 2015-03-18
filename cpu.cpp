@@ -5,6 +5,7 @@
 
 CPU::CPU()
 {
+	time_used = 0;
 	current_process = NULL;
 	t_context = 0;
 	in_use = false;
@@ -18,12 +19,12 @@ bool CPU::run_CPU(int time)
 	if(t_context > 0)
 	{
 		t_context--;
-		time_used++;
-		in_use++;
 		return false;
 	}
 	else
 	{
+		time_used++;
+		(*current_process).increment_use();
 		(*current_process).decrement_CPU();
 		if((*current_process).get_CPU_time() == 0)
 		{

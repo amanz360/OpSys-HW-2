@@ -8,6 +8,7 @@ Process::Process(bool CPU, int num_bursts, int id, int time)
 	this->CPU_bound = CPU;
 	completed_bursts = 0;
 	avg_wait = 0;
+	time_used = 0;
 	reset();
 	if(CPU == true)
 	{
@@ -127,6 +128,8 @@ int Process::get_avg_wait(){return avg_wait;}
 // Returns this process' ID
 int Process::get_process_ID(){return this->process_id;}
 
+int Process::get_use(){return this->time_used;}
+
 // Increments the process' wait time by 1
 void Process::increment_wait() 
 {
@@ -136,6 +139,8 @@ void Process::increment_wait()
 
 // Increments the process' turnaround time by 1
 void Process::increment_turn() {this->turnaround_time++;}
+
+void Process::increment_use() {this->time_used++;}
 
 // Decrements the remaining CPU time by 1
 void Process::decrement_CPU(){this->remaining_CPU_burst--;}
